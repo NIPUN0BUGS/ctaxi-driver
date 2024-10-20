@@ -25,9 +25,8 @@ db.connect((err) => {
 });
 
 // API route for driver login
-// Login route in your server.js
 app.post('/login', (req, res) => {
-  const { vehicleLicencePlate, driverPassword } = req.body; // Use 'driverPassword'
+  const { vehicleLicencePlate, driverPassword } = req.body;
 
   const query = 'SELECT * FROM drivers WHERE vehicleLicencePlate = ? AND driverPassword = ?';
   db.query(query, [vehicleLicencePlate, driverPassword], (err, result) => {
@@ -35,12 +34,13 @@ app.post('/login', (req, res) => {
       return res.status(500).send('Server error');
     }
     if (result.length > 0) {
-      return res.json(result[0]); // Return driver data if login is successful
+      return res.json(result[0]); // Ensure profilePhoto is included in the response
     } else {
       return res.status(401).send('Invalid credentials');
     }
   });
 });
+
 
 
 // API route to update driver availability status

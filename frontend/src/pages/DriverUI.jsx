@@ -2,7 +2,6 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Button,
-  Switch,
   Typography,
   Box,
   Card,
@@ -11,9 +10,9 @@ import {
   Divider,
   Snackbar,
 } from '@mui/material';
+import { Alert } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { Alert } from '@mui/material';
 
 const DriverUI = () => {
   const { state } = useLocation();
@@ -21,7 +20,6 @@ const DriverUI = () => {
   const driverData = state?.driverData;
 
   const [online, setOnline] = React.useState(driverData?.driverAvailability || false);
-  const [callActive, setCallActive] = React.useState(false);
   const [error, setError] = React.useState(false);
 
   const handleStatusChange = async () => {
@@ -53,8 +51,7 @@ const DriverUI = () => {
   };
 
   return (
-    <Box
-    >
+    <Box>
       <Card
         elevation={3}
         sx={{
@@ -74,15 +71,27 @@ const DriverUI = () => {
           <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
             <Avatar
               alt="Driver Profile"
-              src={driverData?.profilePhoto || "https://via.placeholder.com/100"}
+              src={driverData?.profilePhoto 
+                ? `http://localhost:8081/uploads/driverPhotos/${driverData.profilePhoto}`
+                : 'https://via.placeholder.com/100'}
               sx={{ width: 60, height: 60, mr: 2 }}
             />
             <Box>
-              <Typography variant="h6" fontWeight="bold">{driverData?.driverName}</Typography>
-              <Typography variant="body2" color="text.secondary">License: {driverData?.vehicleLicencePlate}</Typography>
-              <Typography variant="body2" color="text.secondary">Contact: {driverData?.driverPhone}</Typography>
-              <Typography variant="body2" color="text.secondary">Color: {driverData?.vehicleColor}</Typography>
-              <Typography variant="body2" color="text.secondary">Location: {driverData?.driverLocation}</Typography>
+              <Typography variant="h6" fontWeight="bold">
+                {driverData?.driverName}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                License: {driverData?.vehicleLicencePlate}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Contact: {driverData?.driverPhone}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Color: {driverData?.vehicleColor}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Location: {driverData?.driverLocation}
+              </Typography>
             </Box>
           </Box>
 
@@ -93,14 +102,30 @@ const DriverUI = () => {
             Driver Dashboard
           </Typography>
 
-          <Typography
-            variant="body1"
-            color={online ? 'green' : 'red'}
-            sx={{ fontWeight: 'bold', mb: 2, textAlign: 'center' }}
+          {/* Status in pill shape with icons */}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              mb: 2,
+              padding: '5px 15px',
+              backgroundColor: online ? '#e0f7fa' : '#ffebee',
+              color: online ? '#0288d1' : '#d32f2f',
+              borderRadius: '50px',
+              fontWeight: 'bold',
+            }}
           >
-            Status: {online ? 'Online' : 'Offline'}
-            {online ? <CheckCircleIcon sx={{ color: 'green', ml: 1 }} /> : <CancelIcon sx={{ color: 'red', ml: 1 }} />}
-          </Typography>
+            {online ? (
+              <>
+                <CheckCircleIcon sx={{ mr: 1 }} /> Online
+              </>
+            ) : (
+              <>
+                <CancelIcon sx={{ mr: 1 }} /> Offline
+              </>
+            )}
+          </Box>
 
           <Button
             variant="contained"
