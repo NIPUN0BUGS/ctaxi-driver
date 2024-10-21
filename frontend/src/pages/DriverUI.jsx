@@ -99,7 +99,7 @@ const DriverUI = () => {
 
           {/* Driver Status and Call Control */}
           <Typography variant="h5" gutterBottom textAlign="center">
-            Driver Dashboard
+            Driver Profile
           </Typography>
 
           {/* Status in pill shape with icons */}
