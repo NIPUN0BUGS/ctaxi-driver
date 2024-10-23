@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Button,
@@ -9,20 +9,27 @@ import {
   Avatar,
   Divider,
   Snackbar,
+  Grid
 } from '@mui/material';
 import { Alert } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const DriverUI = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const driverData = state?.driverData;
 
-  const [online, setOnline] = React.useState(driverData?.driverAvailability || false);
-  const [error, setError] = React.useState(false);
+  const [online, setOnline] = useState(driverData?.driverAvailability || false);
+  const [error, setError] = useState(false);
 
   const handleStatusChange = async () => {
+    if (!driverData?.id) {
+      console.error('Driver data is missing.');
+      return;
+    }
+
     const newStatus = !online;
     setOnline(newStatus);
 
@@ -68,30 +75,55 @@ const DriverUI = () => {
       >
         <CardContent>
           {/* Driver Profile Section */}
-          <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Avatar
-              alt="Driver Profile"
-              src={driverData?.profilePhoto 
-                ? `http://localhost:8081/uploads/driverPhotos/${driverData.profilePhoto}`
-                : 'https://via.placeholder.com/100'}
-              sx={{ width: 60, height: 60, mr: 2 }}
-            />
+              alt="Driver Initial"
+              sx={{
+                width: 60,
+                height: 60,
+                mr: 2,
+                backgroundColor: '#1976d2', // Customize the background color if needed
+                color: '#ffffff', // Customize the text color
+                fontSize: '24px', // Font size for the initial
+              }}
+            >
+              {driverData?.driverName ? driverData.driverName.charAt(0).toUpperCase() : '?'}
+            </Avatar>
+
             <Box>
-              <Typography variant="h6" fontWeight="bold">
+              <Typography variant="h6" fontWeight="bold" textAlign="center" mb={1}>
                 {driverData?.driverName}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                License: {driverData?.vehicleLicencePlate}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Contact: {driverData?.driverPhone}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Color: {driverData?.vehicleColor}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Location: {driverData?.driverLocation}
-              </Typography>
+
+              <Box display="flex" flexDirection="column">
+                <Box display="flex" mb={0.5}>
+                  <Typography variant="body2" fontWeight="bold" sx={{ minWidth: '75px' }}>License:</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {typeof driverData?.vehicleLicencePlate === 'string' ? driverData?.vehicleLicencePlate : 'N/A'}
+                  </Typography>
+                </Box>
+
+                <Box display="flex" mb={0.5}>
+                  <Typography variant="body2" fontWeight="bold" sx={{ minWidth: '75px' }}>Contact:</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {typeof driverData?.driverPhone === 'string' ? driverData?.driverPhone : 'N/A'}
+                  </Typography>
+                </Box>
+
+                <Box display="flex" mb={0.5}>
+                  <Typography variant="body2" fontWeight="bold" sx={{ minWidth: '75px' }}>Color:</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {typeof driverData?.vehicleColor === 'string' ? driverData?.vehicleColor : 'N/A'}
+                  </Typography>
+                </Box>
+
+                <Box display="flex" mb={0.5}>
+                  <Typography variant="body2" fontWeight="bold" sx={{ minWidth: '75px' }}>Location:</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {typeof driverData?.driverLocation === 'string' ? driverData?.driverLocation : 'N/A'}
+                  </Typography>
+                </Box>
+              </Box>
             </Box>
           </Box>
 
@@ -110,7 +142,7 @@ const DriverUI = () => {
               alignItems: 'center',
               mb: 2,
               padding: '5px 15px',
-              backgroundColor: online ? '#e0f7fa' : '#ffebee',
+              backgroundColor: online ? '#a5f5ff' : '#ffb8c3',
               color: online ? '#0288d1' : '#d32f2f',
               borderRadius: '50px',
               fontWeight: 'bold',
@@ -132,7 +164,7 @@ const DriverUI = () => {
             color={online ? 'success' : 'error'}
             onClick={handleStatusChange}
             fullWidth
-            sx={{ mb: 2, textTransform: 'none' }} // Prevent uppercase text transformation
+            sx={{ textTransform: 'none' }} // Prevent uppercase text transformation
           >
             {online ? 'Go Offline' : 'Go Online'}
           </Button>
@@ -140,22 +172,29 @@ const DriverUI = () => {
           {/* Logout Button */}
           <Button
             variant="contained"
-            color="secondary"
             onClick={handleLogout}
             fullWidth
-            sx={{ mt: 2 }} // Add margin top for spacing
+            sx={{
+              mt: 5, // Add margin top for spacing
+              bgcolor: 'darkred'
+            }}
+            startIcon={<LogoutIcon />} // Adding the icon to the left of the text
           >
             Logout
           </Button>
+
+          {/* Error Snackbar */}
+          <Snackbar
+            open={error}
+            autoHideDuration={6000}
+            onClose={() => setError(false)}
+          >
+            <Alert onClose={() => setError(false)} severity="error" sx={{ width: '100%' }}>
+              Failed to update driver status!
+            </Alert>
+          </Snackbar>
         </CardContent>
       </Card>
-
-      {/* Snackbar for error feedback */}
-      <Snackbar open={error} autoHideDuration={6000} onClose={() => setError(false)}>
-        <Alert onClose={() => setError(false)} severity="error" sx={{ width: '100%' }}>
-          Error updating driver status!
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };
